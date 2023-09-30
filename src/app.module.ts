@@ -1,12 +1,11 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingRequestInterceptor } from '@quizs/interceptors/logging';
+import { LoggingModule } from '@quizs/shared/logging';
 
 @Module({
-  imports: [],
-  controllers: [],
+  imports: [LoggingModule],
   providers: [
-    Logger,
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingRequestInterceptor,

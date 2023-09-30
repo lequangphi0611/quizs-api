@@ -1,13 +1,13 @@
 import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
   CallHandler,
+  ExecutionContext,
+  Injectable,
   Logger,
+  NestInterceptor,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingRequestInterceptor implements NestInterceptor {
@@ -21,15 +21,13 @@ export class LoggingRequestInterceptor implements NestInterceptor {
       `headers: ${JSON.stringify(request.headers, null, 4)}`,
       loggerContext,
     );
-    return next
-      .handle()
-      .pipe(
-        tap(() =>
-          this.logger.log(
-            `End ${request.method} - ${request.url}`,
-            loggerContext,
-          ),
-        ),
-      );
+    return next.handle().pipe(
+      finalize(() => {
+        this.logger.log(
+          `End ${request.method} - ${request.url}`,
+          loggerContext,
+        );
+      }),
+    );
   }
 }
